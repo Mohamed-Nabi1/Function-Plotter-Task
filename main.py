@@ -1,8 +1,10 @@
+import re
 from PySide2.QtWidgets import QApplication ,QWidget,QDesktopWidget,QLabel,QMessageBox,QPushButton,QDoubleSpinBox,QVBoxLayout,QHBoxLayout,QLineEdit
 from PySide2.QtGui import QFont
 import sys
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from matplotlib.figure import Figure
+import numpy as np
 
 # our default font for all text
 font=QFont("Times",20)
@@ -81,25 +83,57 @@ class Window(QWidget):
         # when x value or click on plot button , call change_value() function
         self.mn.valueChanged.connect(lambda _: self.change_value())
         self.mx.valueChanged.connect(lambda _: self.change_value())
-
         self.plot.clicked.connect(lambda _: self.change_value())
-
+        self.change_value()
 
     def change_value(self):
         mn = self.mn.value()
         mx = self.mx.value()
-        function=self.function.value()
+
         # error Minimum x must be less than or equal to Maximum x
         if mn >= mx:
             self.mn.setValue(mx-1)          
             self.error_message.setText("'Minimum x' should be less than 'Maximum x'")
             self.error_message.show()
             return
-        if function =="x":
-            self.error_message.setText("'Minimum x' should be less than 'Maximum x'")
+        
+        equation=self.function.text()
+        allowed_words=['x','/','*','^','-','+']
+
+        #all letter in equation
+        all_letters=re.findall('[a-zA-Z]+', equation)
+        #check for allowed letter in equation 'x' only 
+        for letter in all_letters:
+            if letter not in allowed_words:
+                self.error_message.setText(f"'{letter}' is not allowed to use in math equation.\nOnly equations of 'x' are allowed.\ne.g., x^2+2*x-1\n")
+                self.error_message.show()
+
+        #all symbols in equation
+        all_symbols=re.findall('[^0-9A-Za-z]+',equation)
+        #check for allowed symbols ('*','/','-','+','^')
+        for letter in all_symbols:
+            if letter not in allowed_words:
+                self.error_message.setText(f"'{letter}' is not allowed to use in math equation.\nOnly these symbols '*','/','-','+','^' are allowed.\ne.g., 3*x^2+x/2-1\n")
+                self.error_message.show()
+
+        #replace '^' to '**' for math equation
+        equation = equation.replace('^', '**')
+
+        # make interval array from mn to mx
+        x = np.linspace(mn, mx)
+
+        # try to convert equation string to real equation for plot it otherwise raise error 
+        try:
+            y=eval(equation)
+        except:
+            self.error_message.setText(f"there is an error in this equation {equation}\nrewrite your equation.\ne.g., x^2+2*x-1\n")
             self.error_message.show()
             return
-
+    
+        self.axes.clear()
+        # plot and draw the equation
+        self.axes.plot(x, y)
+        self.fig.draw()
 
     # to center window on screen
     def center(self):
