@@ -121,6 +121,11 @@ class Window(QWidget):
         # make interval array from mn to mx
         x = np.linspace(mn, mx)
 
+        # to deal with constant functions e.g., y = 1
+        if "x" not in equation:
+            equation = f"{equation}+0*x"
+
+
         # try to convert equation string to real equation for plot it otherwise raise error 
         try:
             y=eval(equation)
