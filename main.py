@@ -9,7 +9,6 @@ import numpy as np
 # our default font for all text
 font=QFont("Times",20)
 
-
 class Window(QWidget):
     def __init__(self):
         super().__init__()
@@ -86,7 +85,6 @@ class Window(QWidget):
         self.plot.clicked.connect(lambda _: self.change_value())
         self.change_value()
 
-    # @Slot()
     def change_value(self):
         mn = self.mn.value()
         mx = self.mx.value()
@@ -143,10 +141,11 @@ class Window(QWidget):
         qRect.moveCenter(centerPoint)
         self.move(qRect.topLeft())
     
-
-
-
-    
+''' 
+    check whether the current script is being run on its own or being imported somewhere else  
+    main.py is run directly,when the interpreter sets the __name__ variable as __main__ 
+    and when it is run through test_window.py by importing, the __name__ variable is set as the name of the python script (main)
+'''
 if __name__ == "__main__":
     app=QApplication(sys.argv)
     window=Window()
