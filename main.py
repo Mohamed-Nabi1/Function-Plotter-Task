@@ -86,6 +86,7 @@ class Window(QWidget):
         self.plot.clicked.connect(lambda _: self.change_value())
         self.change_value()
 
+    # @Slot()
     def change_value(self):
         mn = self.mn.value()
         mx = self.mx.value()
@@ -146,10 +147,10 @@ class Window(QWidget):
 
 
     
+if __name__ == "__main__":
+    app=QApplication(sys.argv)
+    window=Window()
+    window.show()
 
-myapp=QApplication(sys.argv)
-window=Window()
-window.show()
-
-myapp.exec_()
-sys.exit(0)
+    app.exec_()
+    sys.exit(0)
